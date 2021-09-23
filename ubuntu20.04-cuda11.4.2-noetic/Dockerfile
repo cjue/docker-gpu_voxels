@@ -61,9 +61,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # GPU-Voxels
 
-ARG GVL_BRANCH=master
-ARG GVL_REPO=https://github.com/fzi-forschungszentrum-informatik/gpu-voxels.git
-
 RUN apt-get update && apt-get upgrade -y &&\
     # Install build tools, build dependencies and python
     apt-get install -y \
@@ -84,7 +81,18 @@ RUN apt-get update && apt-get upgrade -y &&\
 # make sure "source" works
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
+ARG GVL_BRANCH=master
+#ARG GVL_BRANCH=docker
+# ARG GVL_REPO=https://github.com/fzi-forschungszentrum-informatik/gpu-voxels.git
+# ARG GVL_REPO=/home/juelg/gpu_voxels_oss_release/gpu-voxels/.git
+ARG GVL_REPO="/local_gpu_voxels.git"
+
+COPY $GVL_REPO /tmp/gpu-voxels.git
+
+ARG GVL_REPO="/tmp/gpu-voxels.git"
+
 RUN cd /opt/ &&\
+    echo repo: $GVL_REPO &&\
     git clone $GVL_REPO -b $GVL_BRANCH &&\
     # Create build folder and switch to it
     mkdir /opt/gpu-voxels/build && cd /opt/gpu-voxels/build &&\
